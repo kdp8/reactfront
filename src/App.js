@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import React from 'react';
-import HealthCheck from './components/HealthCheck';
+import HelloWorld from './HelloWorld';
 
 // function App() {
 //   return (
@@ -28,7 +28,7 @@ import HealthCheck from './components/HealthCheck';
 function App() {
   return (
     <div className="App">
-      <HealthCheck />
+      <HelloWorld />
     </div>
   );
 }
