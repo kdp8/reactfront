@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 import Home from './components/home';
+import MovieSearch from './components/movies';
 import Customer from './components/customers';
 import NotFound from './components/notFound';
 
@@ -19,10 +20,10 @@ function App() {
               <Link to="/customers">Customers</Link>
             </li>
             <li>
-              <Link to="/movies">movies</Link>
+              <Link to="/movies">Movies</Link>
             </li>
             <li>
-              <Link to="/report">report</Link>
+              <Link to="/report">Report</Link>
             </li>
           </ul>
         </nav>
@@ -30,7 +31,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/customers" element={<Customer />} />
-          <Route path="/movies" element={<Home />} />
+          <Route path="/movies" element={<MovieSearch />} />
           <Route path="/report" element={<Home />} />
 
           <Route path="*" element={<NotFound />} />
