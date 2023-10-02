@@ -4,6 +4,7 @@ import axios from 'axios';
 function Customer() {
   const [customers, setCustomers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  // eslint-disable-next-line
   const [showAll, setShowAll] = useState(false);
   const [originalCustomers, setOriginalCustomers] = useState([]);
   const [noResults, setNoResults] = useState(false);
@@ -11,6 +12,8 @@ function Customer() {
   const [editedFirstName, setEditedFirstName] = useState('');
   const [editedLastName, setEditedLastName] = useState('');
   const [editedEmail, setEditedEmail] = useState('');
+  const [isAddingCustomer, setIsAddingCustomer] = useState(false);
+  const [editedAddressId, setEditedAddressId] = useState('');
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/customers/')
@@ -95,7 +98,42 @@ function Customer() {
         .catch((error) => console.error(error));
     }
   };
+
+  const handleAddCustomer = () => {
+    setIsAddingCustomer(true);
+  };
+
+  const handleSaveNewCustomer = () => {
+    const newCustomer = {
+      first_name: editedFirstName,
+      last_name: editedLastName,
+      email: editedEmail,
+      create_date: new Date().toISOString(),
+      active: 1,
+      store: 1,
+      address: editedAddressId || 1,
+    };
   
+    axios
+      .post('http://127.0.0.1:8000/customers/create/', newCustomer)
+      .then((response) => {
+        setCustomers([...customers, response.data]);
+        setIsAddingCustomer(false); //reset
+        setEditedFirstName('');
+        setEditedLastName('');
+        setEditedEmail('');
+        setEditedAddressId('');
+        window.location.reload();
+      })
+      .catch((error) => console.error(error));
+  };
+
+  const handleCancelNewCustomer = () => {
+    setIsAddingCustomer(false);
+    setEditedFirstName('');
+    setEditedLastName('');
+    setEditedEmail('');
+  };
 
   return (
     <div>
@@ -103,53 +141,126 @@ function Customer() {
       <div>
         <input
           type="text"
-          placeholder="Search by ID, first name, or last name"
+          placeholder="Search by ID, First Name, or Last Name"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <button onClick={handleSearch}>Search</button>
-        {showAll && <button onClick={handleShowAll}>Show All</button>}
+        <button onClick={handleShowAll}>Show All</button>
       </div>
-      {noResults ? (
-        <p>No results found.</p>
+
+      {!isAddingCustomer ? (
+        <button onClick={handleAddCustomer}>Add Customer</button>
       ) : (
-        <ul>
+        <div>
+          <h2>Add a new Customer</h2>
+          <div>
+            <label>First Name:</label>
+            <input
+              type="text"
+              value={editedFirstName}
+              onChange={(e) => setEditedFirstName(e.target.value)}
+            />
+          </div>
+          <div>
+            <label>Last Name:</label>
+            <input
+              type="text"
+              value={editedLastName}
+              onChange={(e) => setEditedLastName(e.target.value)}
+            />
+          </div>
+          <div>
+            <label>Email:</label>
+            <input
+              type="text"
+              value={editedEmail}
+              onChange={(e) => setEditedEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <label>Address ID:</label>
+            <input
+              type="text"
+              value={editedAddressId}
+              onChange={(e) => setEditedAddressId(e.target.value)}
+            />
+            <label>(Leave empty for deafault ID 1)</label>            
+          </div>
+          <div>
+            <button onClick={handleSaveNewCustomer}>Save</button>
+            <button onClick={handleCancelNewCustomer}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
           {customers.map((customer) => (
-            <li key={customer.customer_id}>
-              {editingCustomerId === customer.customer_id ? (
-                <div>
+            <tr key={customer.customer_id}>
+              <td>{customer.customer_id}</td>
+              <td>
+                {editingCustomerId === customer.customer_id ? (
                   <input
                     type="text"
-                    placeholder="First name"
                     value={editedFirstName}
                     onChange={(e) => setEditedFirstName(e.target.value)}
                   />
+                ) : (
+                  customer.first_name
+                )}
+              </td>
+              <td>
+                {editingCustomerId === customer.customer_id ? (
                   <input
                     type="text"
-                    placeholder="Last name"
                     value={editedLastName}
                     onChange={(e) => setEditedLastName(e.target.value)}
                   />
+                ) : (
+                  customer.last_name
+                )}
+              </td>
+              <td>
+                {editingCustomerId === customer.customer_id ? (
                   <input
                     type="text"
-                    placeholder="Email"
                     value={editedEmail}
                     onChange={(e) => setEditedEmail(e.target.value)}
                   />
-                  <button onClick={handleSaveEdit}>Save</button>
-                  <button onClick={handleCancelEdit}>Cancel</button>
-                </div>
-              ) : (
-                <div>
-                  {customer.customer_id}: {customer.first_name} {customer.last_name} - {customer.email}
-                  <button onClick={() => handleEdit(customer.customer_id)}>Edit</button>
-                  <button onClick={() => handleDelete(customer.customer_id)}>Delete</button>
-                </div>
-              )}
-            </li>
+                ) : (
+                  customer.email
+                )}
+              </td>
+              <td>
+                {editingCustomerId === customer.customer_id ? (
+                  <>
+                    <button onClick={handleSaveEdit}>Save</button>
+                    <button onClick={handleCancelEdit}>Cancel</button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={() => handleEdit(customer.customer_id)}>Edit</button>
+                    <button onClick={() => handleDelete(customer.customer_id)}>Delete</button>
+                  </>
+                )}
+              </td>
+            </tr>
           ))}
-        </ul>
-      )}
+        </tbody>
+      </table>
+
+      {noResults && <p>No results found.</p>}
+
     </div>
   );
 }
