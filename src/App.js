@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 import Home from './components/home';
 import MovieSearch from './components/movies';
 import Customer from './components/customers';
+import Report from './components/report';
 import NotFound from './components/notFound';
 
 
@@ -32,7 +33,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/customers" element={<Customer />} />
           <Route path="/movies" element={<MovieSearch />} />
-          <Route path="/report" element={<Home />} />
+          <Route path="/report" element={<Report />} />
 
           <Route path="*" element={<NotFound />} />
         </Routes>

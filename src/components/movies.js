@@ -29,13 +29,22 @@ function Movies() {
       {searched && movies.length === 0 ? (
         <p>No results found.</p>
       ) : (
-        <ul>
-          {movies.map((movie) => (
-            <li key={movie.film_id}>
-              {movie.title} - {movie.description}
-            </li>
-          ))}
-        </ul>
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {movies.map((movie) => (
+              <tr key={movie.film_id}>
+                <td>{movie.title}</td>
+                <td>{movie.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );
