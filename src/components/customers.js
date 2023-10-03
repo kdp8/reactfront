@@ -14,6 +14,7 @@ function Customer() {
   const [editedEmail, setEditedEmail] = useState('');
   const [isAddingCustomer, setIsAddingCustomer] = useState(false);
   const [editedAddressId, setEditedAddressId] = useState('');
+  const [rentedMovies, setRentedMovies] = useState([]);
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/customers/')
@@ -135,6 +136,15 @@ function Customer() {
     setEditedEmail('');
   };
 
+  const handleFetchRentedMovies = (customerId) => {
+    axios.get(`http://127.0.0.1:8000/customers/${customerId}/rented-movies/`)
+      .then((response) => {
+        const rentedMoviesData = response.data.rented_movies;
+        setRentedMovies(rentedMoviesData);
+      })
+      .catch((error) => console.error(error));
+  };
+
   return (
     <div>
       <h1>Customer List</h1>
@@ -207,7 +217,11 @@ function Customer() {
         <tbody>
           {customers.map((customer) => (
             <tr key={customer.customer_id}>
-              <td>{customer.customer_id}</td>
+              <td>
+                <button onClick={() => handleFetchRentedMovies(customer.customer_id)}>
+                  {customer.customer_id}
+                </button>
+              </td>
               <td>
                 {editingCustomerId === customer.customer_id ? (
                   <input
@@ -258,6 +272,30 @@ function Customer() {
           ))}
         </tbody>
       </table>
+
+      {rentedMovies.length > 0 && (
+        <div>
+          <h2>Rented Movies</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Movie Title</th>
+                <th>Rental Date</th>
+                <th>Return Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rentedMovies.map((movie, index) => (
+                <tr key={index}>
+                  <td>{movie.film_title}</td>
+                  <td>{movie.rental_date}</td>
+                  <td>{movie.return_date}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {noResults && <p>No results found.</p>}
 
