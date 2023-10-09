@@ -15,6 +15,9 @@ function Customer() {
   const [isAddingCustomer, setIsAddingCustomer] = useState(false);
   const [editedAddressId, setEditedAddressId] = useState('');
   const [rentedMovies, setRentedMovies] = useState([]);
+  const [editedAddress, setEditedAddress] = useState('');
+  const [editedActive, setEditedActive] = useState('');
+  const [editedLastUpdate, setEditedLastUpdate] = useState('');
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/customers/')
@@ -54,13 +57,26 @@ function Customer() {
     setEditedFirstName(customerToEdit.first_name);
     setEditedLastName(customerToEdit.last_name);
     setEditedEmail(customerToEdit.email || '');
+    setEditedAddress(customerToEdit.address);
+    setEditedActive(customerToEdit.active);
+    setEditedLastUpdate(new Date().toISOString());
   };
 
   const handleSaveEdit = () => {
+    const activeValue = parseInt(editedActive);
+  
+    if (activeValue !== 0 && activeValue !== 1) {
+      alert("Active field must be either 0 or 1.");
+      return;
+    }
+
     const updatedCustomer = {
       first_name: editedFirstName,
       last_name: editedLastName,
       email: editedEmail,
+      address: editedAddress,
+      active: editedActive,
+      last_update: new Date().toISOString(),
     };
 
     axios.put(`http://127.0.0.1:8000/customers/${editingCustomerId}/update/`, updatedCustomer)
@@ -73,6 +89,9 @@ function Customer() {
         setEditedFirstName('');
         setEditedLastName('');
         setEditedEmail('');
+        setEditedAddress('');
+        setEditedActive('');
+        setEditedLastUpdate('');
         window.location.reload();
       })
       .catch((error) => console.error(error));
@@ -205,72 +224,113 @@ function Customer() {
       )}
 
       <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Action</th>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Address</th>
+          <th>Active</th>
+          <th>Create Date</th>
+          <th>Last Update</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {customers.map((customer) => (
+          <tr key={customer.customer_id}>
+            <td>
+              <button onClick={() => handleFetchRentedMovies(customer.customer_id)}>
+                {customer.customer_id}
+              </button>
+            </td>
+            <td>
+              {editingCustomerId === customer.customer_id ? (
+                <input
+                  type="text"
+                  value={editedFirstName}
+                  onChange={(e) => setEditedFirstName(e.target.value)}
+                />
+              ) : (
+                customer.first_name
+              )}
+            </td>
+            <td>
+              {editingCustomerId === customer.customer_id ? (
+                <input
+                  type="text"
+                  value={editedLastName}
+                  onChange={(e) => setEditedLastName(e.target.value)}
+                />
+              ) : (
+                customer.last_name
+              )}
+            </td>
+            <td>
+              {editingCustomerId === customer.customer_id ? (
+                <input
+                  type="text"
+                  value={editedEmail}
+                  onChange={(e) => setEditedEmail(e.target.value)}
+                />
+              ) : (
+                customer.email
+              )}
+            </td>
+            <td>
+              {editingCustomerId === customer.customer_id ? (
+                <input
+                  type="text"
+                  value={editedAddress}
+                  onChange={(e) => setEditedAddress(e.target.value)}
+                />
+              ) : (
+                customer.address
+              )}
+            </td>
+            <td>
+              {editingCustomerId === customer.customer_id ? (
+                <input
+                  type="number"
+                  value={editedActive}
+                  onChange={(e) => setEditedActive(e.target.value)}
+                  min={0}
+                  max={1}
+                  step={1}
+                />
+              ) : (
+                customer.active
+              )}
+            </td>
+            <td>{customer.create_date}</td>
+            <td>
+              {editingCustomerId === customer.customer_id ? (
+                <input
+                  type="text"
+                  value={editedLastUpdate}
+                  onChange={(e) => setEditedLastUpdate(e.target.value)}
+                />
+              ) : (
+                customer.last_update
+              )}
+            </td>
+            <td>
+              {editingCustomerId === customer.customer_id ? (
+                <>
+                  <button onClick={handleSaveEdit}>Save</button>
+                  <button onClick={handleCancelEdit}>Cancel</button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => handleEdit(customer.customer_id)}>Edit</button>
+                  <button onClick={() => handleDelete(customer.customer_id)}>Delete</button>
+                </>
+              )}
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {customers.map((customer) => (
-            <tr key={customer.customer_id}>
-              <td>
-                <button onClick={() => handleFetchRentedMovies(customer.customer_id)}>
-                  {customer.customer_id}
-                </button>
-              </td>
-              <td>
-                {editingCustomerId === customer.customer_id ? (
-                  <input
-                    type="text"
-                    value={editedFirstName}
-                    onChange={(e) => setEditedFirstName(e.target.value)}
-                  />
-                ) : (
-                  customer.first_name
-                )}
-              </td>
-              <td>
-                {editingCustomerId === customer.customer_id ? (
-                  <input
-                    type="text"
-                    value={editedLastName}
-                    onChange={(e) => setEditedLastName(e.target.value)}
-                  />
-                ) : (
-                  customer.last_name
-                )}
-              </td>
-              <td>
-                {editingCustomerId === customer.customer_id ? (
-                  <input
-                    type="text"
-                    value={editedEmail}
-                    onChange={(e) => setEditedEmail(e.target.value)}
-                  />
-                ) : (
-                  customer.email
-                )}
-              </td>
-              <td>
-                {editingCustomerId === customer.customer_id ? (
-                  <>
-                    <button onClick={handleSaveEdit}>Save</button>
-                    <button onClick={handleCancelEdit}>Cancel</button>
-                  </>
-                ) : (
-                  <>
-                    <button onClick={() => handleEdit(customer.customer_id)}>Edit</button>
-                    <button onClick={() => handleDelete(customer.customer_id)}>Delete</button>
-                  </>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
+        ))}
+      </tbody>
       </table>
 
       {rentedMovies.length > 0 && (
