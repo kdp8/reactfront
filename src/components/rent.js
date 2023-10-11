@@ -32,9 +32,23 @@ function RentalForm() {
       console.log('Response headers:', error.response.headers);
     }
   }
+
+  const handleReturnMovie = async () => {
+    try {
+      const response = await axios.put(`http://127.0.0.1:8000/rental/${rentalId}/return/`);
+
+      console.log('Server Response:', response.data);
+    } catch (error) {
+      console.error('Error:', error);
+      console.log('Response data:', error.response.data);
+      console.log('Response status:', error.response.status);
+      console.log('Response headers:', error.response.headers);
+    }
+  }
+
   return (
     <div>
-      <h1>Rental A Movie</h1>
+      <h2>Rental A Movie</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="rentalId">Rental ID:</label>
@@ -101,6 +115,20 @@ function RentalForm() {
         </div>
         <button type="submit">Submit</button>
       </form>
+
+      <div>
+        <h2>Return Movie</h2>
+        <div>
+          <label htmlFor="returnMovieId">Rental ID for Returning:</label>
+          <input
+            type="number"
+            id="returnMovieId"
+            value={rentalId}
+            onChange={(e) => setRentalId(e.target.value)}
+          />
+        </div>
+        <button onClick={handleReturnMovie}>Return Movie</button>
+      </div>
     </div>
   );
 }

@@ -339,6 +339,7 @@ function Customer() {
           <table>
             <thead>
               <tr>
+                <th>Rental ID</th>
                 <th>Movie Title</th>
                 <th>Rental Date</th>
                 <th>Return Date</th>
@@ -347,6 +348,7 @@ function Customer() {
             <tbody>
               {rentedMovies.map((movie, index) => (
                 <tr key={index}>
+                  <td>{movie.rental_id}</td>
                   <td>{movie.film_title}</td>
                   <td>{movie.rental_date}</td>
                   <td>{movie.return_date}</td>
