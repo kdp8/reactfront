@@ -6,6 +6,7 @@ import MovieSearch from './components/movies';
 import Customer from './components/customers';
 import Report from './components/report';
 import NotFound from './components/notFound';
+import Rent from './components/rent';
 
 
 function App() {
@@ -26,6 +27,9 @@ function App() {
             <li>
               <Link to="/report">Report</Link>
             </li>
+            <li>
+              <Link to="/rent">Rent</Link>
+            </li>
           </ul>
         </nav>
 
@@ -34,6 +38,7 @@ function App() {
           <Route path="/customers" element={<Customer />} />
           <Route path="/movies" element={<MovieSearch />} />
           <Route path="/report" element={<Report />} />
+          <Route path="/rent" element={<Rent />} />
 
           <Route path="*" element={<NotFound />} />
         </Routes>
